@@ -20,7 +20,7 @@ class _StartScreenState extends State<StartScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
-                'images/merah.png', // Pastikan path ini benar
+                'images/merah.png',
                 height: 150,
               ),
               SizedBox(height: 10),
