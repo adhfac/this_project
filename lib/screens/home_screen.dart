@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:this_project/screens/profile_screen.dart';
 import 'package:this_project/screens/search_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:this_project/util/theme_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,22 +24,24 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFFA80038),
+        backgroundColor: theme.colorScheme.secondary,
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
           });
         },
-        selectedItemColor: const Color(0xFFFBF9FA),
-        unselectedItemColor: const Color.fromARGB(255, 128, 128, 128),
+        selectedItemColor: theme.colorScheme.onSecondary,
+        unselectedItemColor: theme.colorScheme.onSecondary.withOpacity(0.6),
         showSelectedLabels: true,
         showUnselectedLabels: false,
         selectedLabelStyle: const TextStyle(
-          fontFamily: 'playpen', // Ganti dengan nama font kustom Anda
+          fontFamily: 'playpen',
           fontWeight: FontWeight.bold,
         ),
         items: const [
@@ -77,34 +81,62 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Semuria',
-            style: TextStyle(
-              fontFamily: 'playpen',
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFA80038),
-              shadows: <Shadow>[
-                Shadow(
-                  offset: Offset(0, 1.0),
-                  blurRadius: 3.0,
-                  color: Color.fromARGB(255, 164, 164, 164),
-                ),
-              ],
-            ),
+      backgroundColor: theme.colorScheme.background,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.primary,
+        title: Text(
+          'Semuria',
+          style: TextStyle(
+            fontFamily: 'playpen',
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.secondary,
+            shadows: <Shadow>[
+              Shadow(
+                offset: Offset(0, 1.0),
+                blurRadius: 3.0,
+                color: Color.fromARGB(255, 164, 164, 164),
+              ),
+            ],
           ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  signOut(context);
-                },
-                icon: const Icon(Icons.logout))
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(
+              themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
+              color: theme.colorScheme.onPrimary,
+            ),
+            onPressed: () {
+              themeProvider.toggleTheme();
+            },
+          ),
+          IconButton(
+            onPressed: () {
+              signOut(context);
+            },
+            icon: Icon(Icons.logout, color: theme.colorScheme.onPrimary),
+          )
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Halo',
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onBackground,
+                  fontFamily: 'playpen'),
+            ),
           ],
         ),
-        body: Center(
-          child: Text('Halo'),
-        ));
+      ),
+    );
   }
 }

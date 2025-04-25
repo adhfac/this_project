@@ -12,7 +12,10 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -25,16 +28,14 @@ class _StartScreenState extends State<StartScreen> {
               ),
               SizedBox(height: 10),
               SizedBox(height: 40),
-              // Slogan
               Text(
                 'Be happy, be Semuria...',
                 style: TextStyle(
                     fontSize: 18,
-                    color: Color(0xFF2b2024),
+                    color: theme.colorScheme.onBackground,
                     fontFamily: 'playpen'),
               ),
               SizedBox(height: 60),
-              // Tombol Sign In
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -42,7 +43,8 @@ class _StartScreenState extends State<StartScreen> {
                   ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFA80038),
+                  backgroundColor: theme.colorScheme.secondary,
+                  foregroundColor: theme.colorScheme.onSecondary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                   shape: RoundedRectangleBorder(
@@ -51,19 +53,18 @@ class _StartScreenState extends State<StartScreen> {
                 ),
                 child: const Text(
                   'Sign In',
-                  style: TextStyle(
-                      fontSize: 18, color: Colors.white, fontFamily: 'playpen'),
+                  style: TextStyle(fontSize: 18, fontFamily: 'playpen'),
                 ),
               ),
               SizedBox(height: 20),
-              // Text "Don't have an account?"
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
                     "Don't have an account? ",
                     style: TextStyle(
-                        color: Color(0xFF2b2024), fontFamily: 'playpen'),
+                        color: theme.colorScheme.onBackground,
+                        fontFamily: 'playpen'),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -74,7 +75,7 @@ class _StartScreenState extends State<StartScreen> {
                     child: Text(
                       'Sign Up',
                       style: TextStyle(
-                          color: Color(0xFFA80038),
+                          color: theme.colorScheme.secondary,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'playpen'),
                     ),
@@ -104,14 +105,18 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: theme.colorScheme.primary,
+        title: Text(
           'Sign In',
           style: TextStyle(
             fontFamily: 'playpen',
             fontWeight: FontWeight.bold,
-            color: Color(0xFFA80038),
+            color: theme.colorScheme.secondary,
             shadows: <Shadow>[
               Shadow(
                 offset: Offset(0, 1.0),
@@ -132,19 +137,24 @@ class _SigninScreenState extends State<SigninScreen> {
                 height: 32,
               ),
               TextField(
-                style: const TextStyle(fontFamily: 'playpen'),
+                style: TextStyle(
+                  fontFamily: 'playpen',
+                  color: theme.colorScheme.onBackground,
+                ),
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
                     fontFamily: 'playpen',
-                    color: Colors.grey,
+                    color: theme.colorScheme.onBackground.withOpacity(0.6),
                   ),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.onBackground.withOpacity(0.6)),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.secondary, width: 2),
                   ),
                 ),
               ),
@@ -152,26 +162,32 @@ class _SigninScreenState extends State<SigninScreen> {
                 height: 16,
               ),
               TextField(
-                style: const TextStyle(fontFamily: 'playpen'),
+                style: TextStyle(
+                  fontFamily: 'playpen',
+                  color: theme.colorScheme.onBackground,
+                ),
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'Your password?',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     fontFamily: 'playpen',
-                    color: Colors.grey,
+                    color: theme.colorScheme.onBackground.withOpacity(0.6),
                   ),
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.onBackground.withOpacity(0.6)),
                   ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.secondary, width: 2),
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
+                      color: theme.colorScheme.onBackground.withOpacity(0.6),
                     ),
                     onPressed: () {
                       setState(() {
@@ -187,43 +203,55 @@ class _SigninScreenState extends State<SigninScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFa80038),
-                      foregroundColor: Color(0xFFFBf9FA),
-                    ),
-                    onPressed: () async {
-                      try {
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                            email: _emailController.text,
-                            password: _passwordController.text);
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ));
-                      } catch (e) {
-                        setState(() {
-                          _errorMessage = e.toString();
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(_errorMessage)));
-                      }
-                    },
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(fontFamily: 'playpen'),
-                    )),
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
-                        ));
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.secondary,
+                    foregroundColor: theme.colorScheme.onSecondary,
+                  ),
+                  onPressed: () async {
+                    try {
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      );
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ));
+                    } catch (e) {
+                      setState(() {
+                        _errorMessage = e.toString();
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(_errorMessage),
+                          backgroundColor: theme.colorScheme.error,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   },
                   child: const Text(
-                    "Don't have an account?",
-                    style: TextStyle(color: Color(0xFFa80038), fontFamily: 'playpen'),
-                  )),
+                    "Login",
+                    style: TextStyle(fontFamily: 'playpen'),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignUpScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  "Don't have an account?",
+                  style: TextStyle(
+                    color: theme.colorScheme.secondary,
+                    fontFamily: 'playpen',
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -249,14 +277,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: theme.colorScheme.primary,
+        title: Text(
           'Sign Up',
           style: TextStyle(
             fontFamily: 'playpen',
             fontWeight: FontWeight.bold,
-            color: Color(0xFFA80038),
+            color: theme.colorScheme.secondary,
             shadows: <Shadow>[
               Shadow(
                 offset: Offset(0, 1.0),
@@ -277,16 +309,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             TextField(
               controller: _emailController,
-              style: const TextStyle(fontFamily: 'playpen'),
-              decoration: const InputDecoration(
+              style: TextStyle(
+                fontFamily: 'playpen',
+                color: theme.colorScheme.onBackground,
+              ),
+              decoration: InputDecoration(
                 labelText: 'Type your email',
-                labelStyle:
-                    TextStyle(fontFamily: 'playpen', color: Colors.grey),
+                labelStyle: TextStyle(
+                  fontFamily: 'playpen',
+                  color: theme.colorScheme.onBackground.withOpacity(0.6),
+                ),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(
+                      color: theme.colorScheme.onBackground.withOpacity(0.6)),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                  borderSide:
+                      BorderSide(color: theme.colorScheme.secondary, width: 2),
                 ),
               ),
             ),
@@ -295,23 +334,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             TextField(
               controller: _passwordController,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'playpen',
+                color: theme.colorScheme.onBackground,
               ),
               obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: 'Create a password',
-                labelStyle:
-                    const TextStyle(fontFamily: 'playpen', color: Colors.grey),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                labelStyle: TextStyle(
+                  fontFamily: 'playpen',
+                  color: theme.colorScheme.onBackground.withOpacity(0.6),
                 ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: theme.colorScheme.onBackground.withOpacity(0.6)),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide:
+                      BorderSide(color: theme.colorScheme.secondary, width: 2),
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: theme.colorScheme.onBackground.withOpacity(0.6),
                   ),
                   onPressed: () {
                     setState(() {
@@ -326,21 +371,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             TextField(
               controller: _confirmController,
-              style: const TextStyle(fontFamily: 'playpen'),
+              style: TextStyle(
+                fontFamily: 'playpen',
+                color: theme.colorScheme.onBackground,
+              ),
               obscureText: _obscurePassword1,
               decoration: InputDecoration(
                 labelText: 'Confirm password',
-                labelStyle:
-                    const TextStyle(fontFamily: 'playpen', color: Colors.grey),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                labelStyle: TextStyle(
+                  fontFamily: 'playpen',
+                  color: theme.colorScheme.onBackground.withOpacity(0.6),
                 ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: theme.colorScheme.onBackground.withOpacity(0.6)),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide:
+                      BorderSide(color: theme.colorScheme.secondary, width: 2),
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword1 ? Icons.visibility_off : Icons.visibility,
+                    color: theme.colorScheme.onBackground.withOpacity(0.6),
                   ),
                   onPressed: () {
                     setState(() {
@@ -358,22 +411,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFa80038),
-                  foregroundColor: Color(0xFFfbf9fa),
+                  backgroundColor: theme.colorScheme.secondary,
+                  foregroundColor: theme.colorScheme.onSecondary,
                 ),
                 onPressed: () async {
                   if (_passwordController.text != _confirmController.text) {
                     setState(() {
                       _errorMessage = "Password tidak sama";
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
                         content: Text(
-                      _errorMessage,
-                      style: const TextStyle(fontFamily: 'playpen'),
-                    )));
+                          _errorMessage,
+                          style: const TextStyle(fontFamily: 'playpen'),
+                        ),
+                        backgroundColor: theme.colorScheme.error,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                     return;
                   }
-              
+
                   try {
                     await FirebaseAuth.instance.createUserWithEmailAndPassword(
                       email: _emailController.text,
@@ -386,11 +444,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     setState(() {
                       _errorMessage = e.toString();
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
                         content: Text(
-                      _errorMessage,
-                      style: const TextStyle(fontFamily: 'playpen'),
-                    )));
+                          _errorMessage,
+                          style: const TextStyle(fontFamily: 'playpen'),
+                        ),
+                        backgroundColor: theme.colorScheme.error,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                   }
                 },
                 child: const Text(
@@ -400,17 +463,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SigninScreen(),
-                      ));
-                },
-                child: const Text(
-                  "Already have an account?",
-                  style: TextStyle(color: Color(0xFFa80038), fontFamily: 'playpen'),
-                )),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SigninScreen(),
+                  ),
+                );
+              },
+              child: Text(
+                "Already have an account?",
+                style: TextStyle(
+                  color: theme.colorScheme.secondary,
+                  fontFamily: 'playpen',
+                ),
+              ),
+            ),
           ],
         ),
       ),
