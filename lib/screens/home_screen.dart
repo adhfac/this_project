@@ -5,8 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:this_project/screens/profile_screen.dart';
 import 'package:this_project/screens/search_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:this_project/util/theme_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
