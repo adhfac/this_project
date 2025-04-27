@@ -9,6 +9,7 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     Future<void> signOut(BuildContext context) async {
@@ -38,42 +39,80 @@ class SettingScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: theme.colorScheme.onBackground,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          ListTile(
-            leading: const Icon(Icons.brightness_6),
-            title: const Text(
-              'Mode Gelap',
-              style: TextStyle(
-                fontFamily: 'playpen',
-                fontWeight: FontWeight.bold,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: [
+            ListTile(
+              leading: const Icon(Icons.brightness_6),
+              title: const Text(
+                'Mode Gelap',
+                style: TextStyle(
+                  fontFamily: 'playpen',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              trailing: Switch(
+                value: themeProvider.isDark,
+                onChanged: (value) {
+                  themeProvider.toggleTheme();
+                },
               ),
             ),
-            trailing: Switch(
-              value: themeProvider.isDark,
-              onChanged: (value) {
-                themeProvider.toggleTheme();
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text(
+                'Log Out',
+                style: TextStyle(
+                  fontFamily: 'playpen',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              trailing: IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.logout_outlined)),
+              onTap: () {
+                signOut(context);
               },
             ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text(
-              'Log Out',
-              style: TextStyle(
-                fontFamily: 'playpen',
-                fontWeight: FontWeight.bold,
+            const Divider(),
+            ListTile(
+              leading: Icon(Icons.info, color: theme.colorScheme.onBackground),
+              title: const Text(
+                'About us',
+                style: TextStyle(fontFamily: 'playpen', fontWeight: FontWeight.bold),
               ),
+              onTap: () {
+                showAboutDialog(
+                  context: context,
+                  applicationName: 'Pencatat Keuangan',
+                  applicationVersion: '1.0.0',
+                  children: [
+                    const Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Semuria',
+                        style: TextStyle(fontFamily: 'playpen'),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-            trailing: IconButton(
-                onPressed: () {
-                  signOut(context);
-                },
-                icon: const Icon(Icons.logout_outlined)),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
