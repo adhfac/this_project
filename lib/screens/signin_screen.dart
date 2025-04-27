@@ -127,7 +127,9 @@ class _SigninScreenState extends State<SigninScreen>
         title: Text(
           'Sign In',
           style: TextStyle(
-              fontFamily: 'playpen', color: theme.colorScheme.onBackground),
+              fontFamily: 'playpen',
+              color: theme.colorScheme.onBackground,
+              fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),

@@ -161,7 +161,13 @@ class _SignUpScreenState extends State<SignUpScreen>
             Navigator.of(context).pop();
           },
         ),
-        title: Text('Create an account', style: TextStyle(fontFamily: 'playpen',color: theme.colorScheme.onBackground),),
+        title: Text(
+          'Create an account',
+          style: TextStyle(
+              fontFamily: 'playpen',
+              color: theme.colorScheme.onBackground,
+              fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -185,7 +191,6 @@ class _SignUpScreenState extends State<SignUpScreen>
                         ),
                       ),
                     ),
-                    
                     const SizedBox(height: 30),
                     _buildTextField(
                       controller: _emailController,

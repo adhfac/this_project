@@ -80,8 +80,6 @@ class SettingScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              trailing: IconButton(
-                  onPressed: () {}, icon: const Icon(Icons.logout_outlined)),
               onTap: () {
                 signOut(context);
               },
@@ -90,19 +88,20 @@ class SettingScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.info, color: theme.colorScheme.onBackground),
               title: const Text(
-                'About us',
-                style: TextStyle(fontFamily: 'playpen', fontWeight: FontWeight.bold),
+                'About Us',
+                style: TextStyle(
+                    fontFamily: 'playpen', fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 showAboutDialog(
                   context: context,
-                  applicationName: 'Pencatat Keuangan',
+                  applicationName: 'The Semurians',
                   applicationVersion: '1.0.0',
                   children: [
                     const Align(
                       alignment: Alignment.center,
                       child: Text(
-                        'Semuria',
+                        'Created by Semurian Group',
                         style: TextStyle(fontFamily: 'playpen'),
                         textAlign: TextAlign.center,
                       ),

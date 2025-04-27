@@ -34,35 +34,60 @@ class _HomePageState extends State<HomePage> {
         final shouldExit = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 8,
             title: Text(
               'Keluar Aplikasi?',
               style: TextStyle(
-                  fontFamily: 'playpen',
-                  color: theme.colorScheme.onBackground,
-                  fontWeight: FontWeight.bold),
+                fontFamily: 'playpen',
+                color: theme.colorScheme.onBackground,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
             content: Text(
-              'Apakah kamu yakin mau keluar?',
+              'Kamu akan meninggalkan aplikasi ini, kamu serius? 😭🙏',
               style: TextStyle(
-                  fontFamily: 'playpen', color: theme.colorScheme.onBackground),
+                fontFamily: 'playpen',
+                color: theme.colorScheme.onBackground,
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
+                style: TextButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                ),
                 child: Text(
                   'Batal',
                   style: TextStyle(
-                      fontFamily: 'playpen',
-                      color: theme.colorScheme.onBackground),
+                    fontFamily: 'playpen',
+                    color: theme.colorScheme.onBackground,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.secondary,
+                  foregroundColor: theme.colorScheme.onSecondary,
+                  elevation: 2,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
                   'Keluar',
                   style: TextStyle(
-                      fontFamily: 'playpen',
-                      color: theme.colorScheme.secondary),
+                    fontFamily: 'playpen',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -151,7 +176,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.pink,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.favorite_outline,
+              color: Color(0xFFfbf9fa),
+              shadows: [
+                Shadow(
+                  color: Colors.black45,
+                  offset: Offset(2, 2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+          ),
+          onPressed: () {},
+        ),
       ),
       body: Center(
         child: Column(
