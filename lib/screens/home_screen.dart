@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:this_project/screens/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,38 +28,86 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: theme.colorScheme.secondary,
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        selectedItemColor: theme.colorScheme.onSecondary,
-        unselectedItemColor: theme.colorScheme.onSecondary.withOpacity(0.6),
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        selectedLabelStyle: const TextStyle(
-          fontFamily: 'playpen',
-          fontWeight: FontWeight.bold,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+
+        final shouldExit = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              'Keluar Aplikasi?',
+              style: TextStyle(
+                  fontFamily: 'playpen',
+                  color: theme.colorScheme.onBackground,
+                  fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              'Apakah kamu yakin mau keluar?',
+              style: TextStyle(
+                  fontFamily: 'playpen', color: theme.colorScheme.onBackground),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'Batal',
+                  style: TextStyle(
+                      fontFamily: 'playpen',
+                      color: theme.colorScheme.onBackground),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                  'Keluar',
+                  style: TextStyle(
+                      fontFamily: 'playpen',
+                      color: theme.colorScheme.secondary),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldExit == true) {
+          exit(0);
+        }
+      },
+      child: Scaffold(
+        body: _screens[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: theme.colorScheme.secondary,
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          selectedItemColor: theme.colorScheme.onSecondary,
+          unselectedItemColor: theme.colorScheme.onSecondary.withOpacity(0.6),
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
+          selectedLabelStyle: const TextStyle(
+            fontFamily: 'playpen',
+            fontWeight: FontWeight.bold,
+          ),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
         ),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
@@ -82,7 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -94,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
             fontFamily: 'playpen',
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.secondary,
-            shadows: <Shadow>[
+            shadows: const <Shadow>[
               Shadow(
                 offset: Offset(0, 1.0),
                 blurRadius: 3.0,
@@ -104,23 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
-              color: theme.colorScheme.onPrimary,
-            ),
-            onPressed: () {
-              themeProvider.toggleTheme();
-            },
-          ),
-          IconButton(
-            onPressed: () {
-              signOut(context);
-            },
-            icon: Icon(Icons.logout, color: theme.colorScheme.onPrimary),
-          )
-        ],
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Column(

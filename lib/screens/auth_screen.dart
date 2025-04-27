@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:this_project/screens/home_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:this_project/screens/sign_up_screen.dart';
+import 'package:this_project/screens/signin_screen.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -9,479 +10,214 @@ class StartScreen extends StatefulWidget {
   State<StartScreen> createState() => _StartScreenState();
 }
 
-class _StartScreenState extends State<StartScreen> {
+class _StartScreenState extends State<StartScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeInAnimation = const AlwaysStoppedAnimation(1.0);
+  late Animation<Offset> _slideAnimation =
+      const AlwaysStoppedAnimation<Offset>(Offset.zero);
+
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _fadeInAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutQuad,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset(
-                'images/merah.png',
-                height: 150,
-              ),
-              SizedBox(height: 10),
-              SizedBox(height: 40),
-              Text(
-                'Be happy, be Semuria...',
-                style: TextStyle(
-                    fontSize: 18,
-                    color: theme.colorScheme.onBackground,
-                    fontFamily: 'playpen'),
-              ),
-              SizedBox(height: 60),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const SigninScreen(),
-                  ));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.secondary,
-                  foregroundColor: theme.colorScheme.onSecondary,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(fontSize: 18, fontFamily: 'playpen'),
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Don't have an account? ",
-                    style: TextStyle(
-                        color: theme.colorScheme.onBackground,
-                        fontFamily: 'playpen'),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
-                      ));
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          color: theme.colorScheme.secondary,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'playpen'),
-                    ),
-                  ),
-                ],
-              ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.colorScheme.background,
+              theme.colorScheme.background.withOpacity(0.8),
             ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: FadeTransition(
+              opacity: _fadeInAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Column(
+                  children: [
+                    const Spacer(flex: 2),
+                    Hero(
+                      tag: 'logo',
+                      child: Image.asset(
+                        'images/merah.png',
+                        height: size.height * 0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Be happy, be Semuria...',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500,
+                        color: theme.colorScheme.onBackground,
+                        fontFamily: 'playpen',
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const Spacer(flex: 3),
+                    _buildSignInButton(theme),
+                    const SizedBox(height: 32),
+                    _buildSignUpOption(theme),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignInButton(ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.secondary.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-    );
-  }
-}
-
-class SigninScreen extends StatefulWidget {
-  const SigninScreen({super.key});
-
-  @override
-  State<SigninScreen> createState() => _SigninScreenState();
-}
-
-class _SigninScreenState extends State<SigninScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String _errorMessage = ' ';
-  bool _obscurePassword = true;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        title: Text(
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const SigninScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = const Offset(1.0, 0.0);
+                var end = Offset.zero;
+                var curve = Curves.easeInOut;
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                return SlideTransition(
+                    position: animation.drive(tween), child: child);
+              },
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: theme.colorScheme.secondary,
+          foregroundColor: theme.colorScheme.onSecondary,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: const Text(
           'Sign In',
           style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
             fontFamily: 'playpen',
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.secondary,
-            shadows: <Shadow>[
-              Shadow(
-                offset: Offset(0, 1.0),
-                blurRadius: 3.0,
-                color: Color.fromARGB(255, 164, 164, 164),
-              ),
-            ],
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(40),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 32,
-              ),
-              TextField(
-                style: TextStyle(
-                  fontFamily: 'playpen',
-                  color: theme.colorScheme.onBackground,
-                ),
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    fontFamily: 'playpen',
-                    color: theme.colorScheme.onBackground.withOpacity(0.6),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.onBackground.withOpacity(0.6)),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.secondary, width: 2),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              TextField(
-                style: TextStyle(
-                  fontFamily: 'playpen',
-                  color: theme.colorScheme.onBackground,
-                ),
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Your password?',
-                  labelStyle: TextStyle(
-                    fontFamily: 'playpen',
-                    color: theme.colorScheme.onBackground.withOpacity(0.6),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.onBackground.withOpacity(0.6)),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.secondary, width: 2),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: theme.colorScheme.onBackground.withOpacity(0.6),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondary,
-                    foregroundColor: theme.colorScheme.onSecondary,
-                  ),
-                  onPressed: () async {
-                    try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ));
-                    } catch (e) {
-                      setState(() {
-                        _errorMessage = e.toString();
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(_errorMessage),
-                          backgroundColor: theme.colorScheme.error,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(fontFamily: 'playpen'),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignUpScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Don't have an account?",
-                  style: TextStyle(
-                    color: theme.colorScheme.secondary,
-                    fontFamily: 'playpen',
-                  ),
-                ),
-              ),
-            ],
+            letterSpacing: 0.5,
           ),
         ),
       ),
     );
   }
-}
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
-
-  @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmController = TextEditingController();
-  String _errorMessage = ' ';
-  bool _obscurePassword = true;
-  bool _obscurePassword1 = true;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        title: Text(
-          'Sign Up',
+  Widget _buildSignUpOption(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          "Don't have an account? ",
           style: TextStyle(
+            fontSize: 16,
+            color: theme.colorScheme.onBackground,
             fontFamily: 'playpen',
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.secondary,
-            shadows: <Shadow>[
-              Shadow(
-                offset: Offset(0, 1.0),
-                blurRadius: 3.0,
-                color: Color.fromARGB(255, 164, 164, 164),
-              ),
-            ],
           ),
         ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 32,
-            ),
-            TextField(
-              controller: _emailController,
-              style: TextStyle(
-                fontFamily: 'playpen',
-                color: theme.colorScheme.onBackground,
-              ),
-              decoration: InputDecoration(
-                labelText: 'Type your email',
-                labelStyle: TextStyle(
-                  fontFamily: 'playpen',
-                  color: theme.colorScheme.onBackground.withOpacity(0.6),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: theme.colorScheme.onBackground.withOpacity(0.6)),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide:
-                      BorderSide(color: theme.colorScheme.secondary, width: 2),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextField(
-              controller: _passwordController,
-              style: TextStyle(
-                fontFamily: 'playpen',
-                color: theme.colorScheme.onBackground,
-              ),
-              obscureText: _obscurePassword,
-              decoration: InputDecoration(
-                labelText: 'Create a password',
-                labelStyle: TextStyle(
-                  fontFamily: 'playpen',
-                  color: theme.colorScheme.onBackground.withOpacity(0.6),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: theme.colorScheme.onBackground.withOpacity(0.6)),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide:
-                      BorderSide(color: theme.colorScheme.secondary, width: 2),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    color: theme.colorScheme.onBackground.withOpacity(0.6),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextField(
-              controller: _confirmController,
-              style: TextStyle(
-                fontFamily: 'playpen',
-                color: theme.colorScheme.onBackground,
-              ),
-              obscureText: _obscurePassword1,
-              decoration: InputDecoration(
-                labelText: 'Confirm password',
-                labelStyle: TextStyle(
-                  fontFamily: 'playpen',
-                  color: theme.colorScheme.onBackground.withOpacity(0.6),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: theme.colorScheme.onBackground.withOpacity(0.6)),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide:
-                      BorderSide(color: theme.colorScheme.secondary, width: 2),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword1 ? Icons.visibility_off : Icons.visibility,
-                    color: theme.colorScheme.onBackground.withOpacity(0.6),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword1 = !_obscurePassword1;
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const SizedBox(
-              height: 16,
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.secondary,
-                  foregroundColor: theme.colorScheme.onSecondary,
-                ),
-                onPressed: () async {
-                  if (_passwordController.text != _confirmController.text) {
-                    setState(() {
-                      _errorMessage = "Password tidak sama";
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          _errorMessage,
-                          style: const TextStyle(fontFamily: 'playpen'),
-                        ),
-                        backgroundColor: theme.colorScheme.error,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    return;
-                  }
-
-                  try {
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    );
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const SigninScreen(),
-                    ));
-                  } catch (e) {
-                    setState(() {
-                      _errorMessage = e.toString();
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          _errorMessage,
-                          style: const TextStyle(fontFamily: 'playpen'),
-                        ),
-                        backgroundColor: theme.colorScheme.error,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const SignUpScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = const Offset(1.0, 0.0);
+                  var end = Offset.zero;
+                  var curve = Curves.easeInOut;
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+                  return SlideTransition(
+                      position: animation.drive(tween), child: child);
                 },
-                child: const Text(
-                  "Sign Up",
-                  style: TextStyle(fontFamily: 'playpen'),
-                ),
               ),
+            );
+          },
+          child: Text(
+            'Sign Up',
+            style: TextStyle(
+              fontSize: 16,
+              color: theme.colorScheme.secondary,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'playpen',
+              decoration: TextDecoration.underline,
+              decorationThickness: 1.5,
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SigninScreen(),
-                  ),
-                );
-              },
-              child: Text(
-                "Already have an account?",
-                style: TextStyle(
-                  color: theme.colorScheme.secondary,
-                  fontFamily: 'playpen',
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
